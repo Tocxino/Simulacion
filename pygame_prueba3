@@ -1,0 +1,105 @@
+import pygame
+import sys
+import random
+
+# Inicialización de Pygame
+pygame.init()
+
+# Definir colores
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+ColorRayo=(255,255,0)
+
+# Tamaño de la ventana
+size = (515, 515)
+screen = pygame.display.set_mode(size)
+
+# Cargar imagen de fondo
+background = pygame.image.load("Mexico.png").convert()
+
+# Control de FPS
+clock = pygame.time.Clock()
+
+# Coordenadas y velocidad del cuadrado
+cord_x = 10
+cord_y = 10
+speed_x = 0
+speed_y = 0
+
+#Coordenadas y velocidad de rayo
+rayocord_x=50
+rayocord_y=10
+
+# Ocultar el cursor del mouse
+pygame.mouse.set_visible(False)
+
+# Lista de coordenadas de puntos aleatorios
+coord_list = []
+for i in range(200):
+    x = random.randint(0, 800)
+    y = random.randint(0, 800)  # Se extendió para ajustarse mejor a la pantalla
+    coord_list.append([x, y])
+
+# Bucle principal
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+        # Eventos del teclado
+        
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_p:
+                speed_rayo_y=-3
+            if event.key == pygame.K_LEFT:
+                speed_x = -3
+            if event.key == pygame.K_RIGHT:
+                speed_x = 3
+            if event.key == pygame.K_UP:
+                speed_y = -3
+            if event.key == pygame.K_DOWN:
+                speed_y = 3
+
+        if event.type == pygame.KEYUP:
+            if event.key in (pygame.K_LEFT, pygame.K_RIGHT):
+                speed_x = 0
+            if event.key in (pygame.K_UP, pygame.K_DOWN):
+                speed_y = 0
+
+    # ---- Lógica del juego ----
+    if cord_x > 820 or cord_x < 0:  # Ajustado para el tamaño del cuadrado
+        speed_x *= -1
+    if cord_y > 820 or cord_y < 0:
+        speed_y *= -1
+
+    cord_x += speed_x
+    cord_y += speed_y
+
+    # ---- Dibujar en pantalla ----
+    screen.blit(background, [0, 0])  # Fondo
+    
+
+    #Dibujar rayo 
+    pygame.draw.line(screen, ColorRayo, [130,150], [100,150], 5)
+    pygame.draw.line(screen, ColorRayo, [150,200], [200,200], 5)
+
+    # Dibujar puntos rojos en la pantalla (efecto de lluvia)
+    for j in coord_list:
+        pygame.draw.circle(screen, BLUE, j, 2)
+        j[1] += 1
+        if j[1] > 900:  # Reiniciar en la parte superior
+            j[1] = 0
+
+    # Dibujar el cuadrado rojo
+    pygame.draw.rect(screen, BLACK, (cord_x, cord_y, 20, 20))
+
+    pygame.display.flip()  # Actualizar pantalla
+    clock.tick(60)  # Control de FPS
+
+# Salir del juego
+pygame.quit()
+sys.exit()
